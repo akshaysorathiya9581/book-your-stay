@@ -53,34 +53,19 @@ class BYS_Frontend {
      * Enqueue frontend scripts and styles
      */
     public function enqueue_frontend_scripts() {
-        // Enqueue Flatpickr CSS
-        wp_enqueue_style(
-            'flatpickr',
-            'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
-            array(),
-            '4.6.13'
-        );
-        
+        // Enqueue custom calendar styles
         wp_enqueue_style(
             'bys-frontend-style',
             BYS_PLUGIN_URL . 'assets/css/frontend-style.css',
-            array('flatpickr'),
+            array(),
             BYS_PLUGIN_VERSION
         );
         
-        // Enqueue Flatpickr JS
-        wp_enqueue_script(
-            'flatpickr',
-            'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js',
-            array(),
-            '4.6.13',
-            true
-        );
-        
+        // Enqueue custom calendar JavaScript
         wp_enqueue_script(
             'bys-frontend-script',
             BYS_PLUGIN_URL . 'assets/js/frontend-script.js',
-            array('jquery', 'flatpickr'),
+            array('jquery'),
             BYS_PLUGIN_VERSION,
             true
         );
@@ -136,31 +121,12 @@ class BYS_Frontend {
         }
         
         // Check if scripts are already enqueued
-        if (!wp_style_is('flatpickr', 'enqueued')) {
-            wp_enqueue_style(
-                'flatpickr',
-                'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css',
-                array(),
-                '4.6.13'
-            );
-        }
-        
         if (!wp_style_is('bys-frontend-style', 'enqueued')) {
             wp_enqueue_style(
                 'bys-frontend-style',
                 BYS_PLUGIN_URL . 'assets/css/frontend-style.css',
-                array('flatpickr'),
-                BYS_PLUGIN_VERSION
-            );
-        }
-        
-        if (!wp_script_is('flatpickr', 'enqueued')) {
-            wp_enqueue_script(
-                'flatpickr',
-                'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js',
                 array(),
-                '4.6.13',
-                true
+                BYS_PLUGIN_VERSION
             );
         }
         
@@ -168,7 +134,7 @@ class BYS_Frontend {
             wp_enqueue_script(
                 'bys-frontend-script',
                 BYS_PLUGIN_URL . 'assets/js/frontend-script.js',
-                array('jquery', 'flatpickr'),
+                array('jquery'),
                 BYS_PLUGIN_VERSION,
                 true
             );
