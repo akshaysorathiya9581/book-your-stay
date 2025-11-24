@@ -32,6 +32,7 @@ $default_rooms = !empty($atts['rooms']) ? intval($atts['rooms']) : 1;
         <div class="bys-rooms-grid">
             <?php foreach ($rooms as $room): ?>
                 <div class="bys-room-card <?php echo $is_fallback ? 'bys-room-card-fallback' : ''; ?>">
+                    <span class="bys-room-price"></span>
                     <?php if (!empty($room['image'])): ?>
                         <div class="bys-room-image">
                             <?php //echo esc_url($room['image']); ?>
@@ -62,23 +63,23 @@ $default_rooms = !empty($atts['rooms']) ? intval($atts['rooms']) : 1;
                             <?php //echo esc_url($room['image']); ?>
                             <img src="https://dhr.4shaw-development.co/le-franschhoek-hotel-spa/wp-content/uploads/sites/2/2025/03/202203082109130.ROOM_26_2-1-1024x682.jpg"
                                 alt="<?php echo esc_attr($room['name']); ?>" loading="lazy">
+                            <div class="bys-room-price-badge">
+                                <?php
+                                $currency_symbol = 'R'; // Default for ZAR
+                                if ($room['currency'] === 'USD')
+                                    $currency_symbol = '$';
+                                elseif ($room['currency'] === 'EUR')
+                                    $currency_symbol = '€';
+                                elseif ($room['currency'] === 'GBP')
+                                    $currency_symbol = '£';
+                                ?>
+                                <span class="bys-price-label"><?php _e('FROM', 'book-your-stay'); ?></span>
+                                <span class="bys-price-amount">
+                                    <?php echo esc_html($currency_symbol . number_format($room['from_price'], 0)); ?>
+                                </span>
+                                <span class="bys-price-period">/ <?php _e('NIGHT', 'book-your-stay'); ?></span>
+                            </div>
                             <?php if ($room['from_price'] !== null): ?>
-                                <div class="bys-room-price-badge">
-                                    <?php
-                                    $currency_symbol = 'R'; // Default for ZAR
-                                    if ($room['currency'] === 'USD')
-                                        $currency_symbol = '$';
-                                    elseif ($room['currency'] === 'EUR')
-                                        $currency_symbol = '€';
-                                    elseif ($room['currency'] === 'GBP')
-                                        $currency_symbol = '£';
-                                    ?>
-                                    <span class="bys-price-label"><?php _e('FROM', 'book-your-stay'); ?></span>
-                                    <span class="bys-price-amount">
-                                        <?php echo esc_html($currency_symbol . number_format($room['from_price'], 0)); ?>
-                                    </span>
-                                    <span class="bys-price-period">/ <?php _e('NIGHT', 'book-your-stay'); ?></span>
-                                </div>
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>

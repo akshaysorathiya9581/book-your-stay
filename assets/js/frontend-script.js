@@ -1,28 +1,289 @@
 /**
  * Frontend JavaScript for Book Your Stay
+ * Custom Calendar Implementation
  */
 
 (function($) {
     'use strict';
     
-    $(document).ready(function() {
-        // Wait for Flatpickr to be available
-        if (typeof flatpickr !== 'undefined') {
-            initDatePickers();
-        } else {
-            // Retry if Flatpickr not loaded yet
-            setTimeout(function() {
-                if (typeof flatpickr !== 'undefined') {
-                    initDatePickers();
-                }
-            }, 100);
-        }
-    });
+    // Custom Calendar Class
+    function CustomCalendar(input, options) {
+        this.input = $(input);
+        this.options = $.extend({
+            minDate: null,
+            defaultDate: null,
+            onSelect: null,
+            onClose: null
+        }, options || {});
+        
+        this.currentDate = this.options.defaultDate ? new Date(this.options.defaultDate) : new Date();
+        this.selectedDate = this.options.defaultDate ? new Date(this.options.defaultDate) : null;
+        this.minDate = this.options.minDate ? new Date(this.options.minDate) : new Date();
+        this.minDate.setHours(0, 0, 0, 0);
+        
+        this.calendar = null;
+        this.isOpen = false;
+        
+        this.init();
+    }
     
-    /**
-     * Initialize date pickers with Flatpickr calendar widget
-     */
-    function initDatePickers() {
+    CustomCalendar.prototype = {
+        init: function() {
+            var self = this;
+            var $wrapper = this.input.closest('.bys-date-picker-wrapper');
+            var $field = this.input.closest('.bys-date-field');
+            var $icon = $field.find('.bys-date-icon');
+            
+            // Create calendar container
+            this.calendar = $('<div class="bys-custom-calendar"></div>');
+            $field.append(this.calendar);
+            
+            // Store references
+            this.$field = $field;
+            this.$icon = $icon;
+            
+            // Build calendar
+            this.render();
+            
+            // Click handler for input and wrapper (but not icon)
+            $wrapper.on('click', function(e) {
+                // Don't trigger if clicking the icon (it has its own handler)
+                if ($(e.target).closest('.bys-date-icon').length) {
+                    return;
+                }
+                e.stopPropagation();
+                self.toggle();
+            });
+            
+            // Separate click handler for icon
+            $icon.on('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                self.toggle();
+            });
+            
+            // Also handle input click
+            this.input.on('click', function(e) {
+                e.stopPropagation();
+                self.toggle();
+            });
+            
+            // Close on outside click
+            $(document).on('click.calendar-' + this.input.attr('id'), function(e) {
+                if (!$(e.target).closest('.bys-date-field').length && self.isOpen) {
+                    self.close();
+                }
+            });
+        },
+        
+        render: function() {
+            var self = this;
+            var year = this.currentDate.getFullYear();
+            var month = this.currentDate.getMonth();
+            
+            var monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                            'July', 'August', 'September', 'October', 'November', 'December'];
+            var dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+            
+            var html = '<div class="bys-calendar-header">';
+            html += '<div class="bys-calendar-nav">';
+            html += '<button type="button" class="bys-calendar-prev" aria-label="Previous month">';
+            html += '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="#D3AA74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            html += '</button>';
+            html += '<div class="bys-calendar-month-year">';
+            html += '<select class="bys-calendar-month-select">';
+            for (var i = 0; i < 12; i++) {
+                html += '<option value="' + i + '"' + (i === month ? ' selected' : '') + '>' + monthNames[i] + '</option>';
+            }
+            html += '</select>';
+            html += '<select class="bys-calendar-year-select">';
+            var currentYear = new Date().getFullYear();
+            for (var y = currentYear; y <= currentYear + 10; y++) {
+                html += '<option value="' + y + '"' + (y === year ? ' selected' : '') + '>' + y + '</option>';
+            }
+            html += '</select>';
+            html += '</div>';
+            html += '<button type="button" class="bys-calendar-next" aria-label="Next month">';
+            html += '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="#D3AA74" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            html += '</button>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div class="bys-calendar-weekdays">';
+            for (var d = 0; d < 7; d++) {
+                html += '<div class="bys-calendar-weekday">' + dayNames[d] + '</div>';
+            }
+            html += '</div>';
+            
+            html += '<div class="bys-calendar-days">';
+            
+            // Get first day of month and number of days
+            var firstDay = new Date(year, month, 1).getDay();
+            var daysInMonth = new Date(year, month + 1, 0).getDate();
+            var daysInPrevMonth = new Date(year, month, 0).getDate();
+            
+            // Previous month days
+            for (var i = firstDay - 1; i >= 0; i--) {
+                var day = daysInPrevMonth - i;
+                var date = new Date(year, month - 1, day);
+                var isDisabled = date < this.minDate;
+                html += '<div class="bys-calendar-day prev-month' + (isDisabled ? ' disabled' : '') + '" data-date="' + this.formatDate(date) + '">' + day + '</div>';
+            }
+            
+            // Current month days
+            for (var day = 1; day <= daysInMonth; day++) {
+                var date = new Date(year, month, day);
+                var isDisabled = date < this.minDate;
+                var isSelected = this.selectedDate && this.isSameDay(date, this.selectedDate);
+                var isToday = this.isSameDay(date, new Date());
+                
+                html += '<div class="bys-calendar-day' + 
+                        (isDisabled ? ' disabled' : '') + 
+                        (isSelected ? ' selected' : '') + 
+                        (isToday ? ' today' : '') + 
+                        '" data-date="' + this.formatDate(date) + '">' + day + '</div>';
+            }
+            
+            // Next month days
+            var totalCells = 42; // 6 weeks * 7 days
+            var cellsUsed = firstDay + daysInMonth;
+            var nextMonthDays = totalCells - cellsUsed;
+            for (var day = 1; day <= nextMonthDays; day++) {
+                var date = new Date(year, month + 1, day);
+                html += '<div class="bys-calendar-day next-month" data-date="' + this.formatDate(date) + '">' + day + '</div>';
+            }
+            
+            html += '</div>';
+            
+            html += '<div class="bys-calendar-footer">';
+            html += '<button type="button" class="bys-calendar-btn bys-calendar-cancel">Cancel</button>';
+            html += '<button type="button" class="bys-calendar-btn bys-calendar-confirm">Set Date</button>';
+            html += '</div>';
+            
+            this.calendar.html(html);
+            
+            // Bind events
+            this.bindEvents();
+        },
+        
+        bindEvents: function() {
+            var self = this;
+            
+            // Month/Year selectors - use event delegation
+            this.calendar.off('change', '.bys-calendar-month-select, .bys-calendar-year-select')
+                .on('change', '.bys-calendar-month-select, .bys-calendar-year-select', function() {
+                    var month = parseInt(self.calendar.find('.bys-calendar-month-select').val());
+                    var year = parseInt(self.calendar.find('.bys-calendar-year-select').val());
+                    self.currentDate = new Date(year, month, 1);
+                    self.render();
+                });
+            
+            // Navigation buttons - use event delegation
+            this.calendar.off('click', '.bys-calendar-prev, .bys-calendar-next')
+                .on('click', '.bys-calendar-prev', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    self.currentDate.setMonth(self.currentDate.getMonth() - 1);
+                    self.render();
+                })
+                .on('click', '.bys-calendar-next', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    self.currentDate.setMonth(self.currentDate.getMonth() + 1);
+                    self.render();
+                });
+            
+            // Day selection - use event delegation to handle re-renders
+            this.calendar.off('click', '.bys-calendar-day').on('click', '.bys-calendar-day:not(.disabled)', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var dateStr = $(this).data('date');
+                if (dateStr) {
+                    self.selectedDate = new Date(dateStr);
+                    self.render();
+                }
+            });
+            
+            // Footer buttons - use event delegation
+            this.calendar.off('click', '.bys-calendar-cancel, .bys-calendar-confirm')
+                .on('click', '.bys-calendar-cancel', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    self.close();
+                })
+                .on('click', '.bys-calendar-confirm', function(e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (self.selectedDate) {
+                        var dateStr = self.formatDate(self.selectedDate);
+                        self.input.val(dateStr);
+                        // Trigger change event
+                        self.input.trigger('change');
+                        if (self.options.onSelect) {
+                            self.options.onSelect(self.selectedDate, dateStr);
+                        }
+                    }
+                    self.close();
+                });
+        },
+        
+        toggle: function() {
+            if (this.isOpen) {
+                this.close();
+            } else {
+                this.open();
+            }
+        },
+        
+        open: function() {
+            this.isOpen = true;
+            this.calendar.addClass('open');
+            this.$field.addClass('calendar-open');
+            // Update month/year selects to current view
+            var month = this.currentDate.getMonth();
+            var year = this.currentDate.getFullYear();
+            this.calendar.find('.bys-calendar-month-select').val(month);
+            this.calendar.find('.bys-calendar-year-select').val(year);
+        },
+        
+        close: function() {
+            this.isOpen = false;
+            this.calendar.removeClass('open');
+            this.$field.removeClass('calendar-open');
+            if (this.options.onClose) {
+                this.options.onClose();
+            }
+        },
+        
+        formatDate: function(date) {
+            var year = date.getFullYear();
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var day = String(date.getDate()).padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        },
+        
+        isSameDay: function(date1, date2) {
+            return date1.getFullYear() === date2.getFullYear() &&
+                   date1.getMonth() === date2.getMonth() &&
+                   date1.getDate() === date2.getDate();
+        },
+        
+        setDate: function(date) {
+            this.selectedDate = new Date(date);
+            this.currentDate = new Date(date);
+            this.input.val(this.formatDate(date));
+            this.render();
+        },
+        
+        setMinDate: function(date) {
+            this.minDate = new Date(date);
+            this.minDate.setHours(0, 0, 0, 0);
+            this.render();
+        }
+    };
+    
+    // Initialize calendars
+    $(document).ready(function() {
         var $checkin = $('#bys-checkin');
         var $checkout = $('#bys-checkout');
         
@@ -32,167 +293,62 @@
         
         var today = new Date();
         today.setHours(0, 0, 0, 0);
-        var minDate = today.toISOString().split('T')[0];
+        var minDate = today;
         
-        // Function to add custom footer buttons
-        function addCustomFooter(instance) {
-            var calendar = instance.calendarContainer;
-            var footer = document.createElement('div');
-            footer.className = 'flatpickr-calendar-footer';
-            
-            var cancelBtn = document.createElement('button');
-            cancelBtn.type = 'button';
-            cancelBtn.className = 'flatpickr-cancel-btn';
-            cancelBtn.textContent = 'Cancel';
-            cancelBtn.onclick = function() {
-                instance.close();
-            };
-            
-            var confirmBtn = document.createElement('button');
-            confirmBtn.type = 'button';
-            confirmBtn.className = 'flatpickr-confirm-btn';
-            confirmBtn.textContent = 'Set Date';
-            confirmBtn.onclick = function() {
-                instance.close();
-            };
-            
-            footer.appendChild(cancelBtn);
-            footer.appendChild(confirmBtn);
-            calendar.appendChild(footer);
-        }
-        
-        // Initialize Check-In date picker
-        var checkinPicker = flatpickr($checkin[0], {
-            dateFormat: 'Y-m-d',
+        // Initialize Check-In calendar
+        var checkinCalendar = new CustomCalendar($checkin[0], {
             minDate: minDate,
-            defaultDate: $checkin.val() || minDate,
-            allowInput: false,
-            clickOpens: true,
-            appendTo: $checkin.closest('.bys-date-field')[0],
-            static: false,
-            monthSelectorType: 'dropdown',
-            animate: true,
-            locale: {
-                firstDayOfWeek: 0 // Start week on Sunday (0 = Sunday, 1 = Monday)
-            },
-            onReady: function(selectedDates, dateStr, instance) {
-                addCustomFooter(instance);
-                // Ensure proper alignment after render
-                setTimeout(function() {
-                    instance.redraw();
-                    // Force alignment fix
-                    var calendar = instance.calendarContainer;
-                    if (calendar) {
-                        var weekdays = calendar.querySelector('.flatpickr-weekdays');
-                        var days = calendar.querySelector('.flatpickr-days');
-                        if (weekdays && days) {
-                            // Ensure both have same width
-                            var width = Math.max(weekdays.offsetWidth, days.offsetWidth);
-                            weekdays.style.width = width + 'px';
-                            days.style.width = width + 'px';
-                        }
-                    }
-                }, 50);
-            },
-            onChange: function(selectedDates, dateStr, instance) {
+            defaultDate: $checkin.val() || today,
+            onSelect: function(date, dateStr) {
                 // Update checkout minimum date
-                if (selectedDates.length > 0) {
-                    var checkinDate = new Date(selectedDates[0]);
-                    var minCheckout = new Date(checkinDate);
+                var minCheckout = new Date(date);
                     minCheckout.setDate(minCheckout.getDate() + 1);
-                    
-                    checkoutPicker.set('minDate', minCheckout);
-                    
-                    // Auto-update checkout if it's before new minimum
-                    var checkoutDate = checkoutPicker.selectedDates[0];
-                    if (checkoutDate && checkoutDate <= checkinDate) {
-                        checkoutPicker.setDate(minCheckout);
-                    }
+                checkoutCalendar.setMinDate(minCheckout);
+                
+                // Auto-update checkout if needed
+                if (checkoutCalendar.selectedDate && checkoutCalendar.selectedDate <= date) {
+                    checkoutCalendar.setDate(minCheckout);
                 }
             }
         });
         
-        // Initialize Check-Out date picker
-        var checkoutPicker = flatpickr($checkout[0], {
-            dateFormat: 'Y-m-d',
-            minDate: $checkin.val() ? (function() {
-                var checkinVal = new Date($checkin.val());
-                checkinVal.setDate(checkinVal.getDate() + 1);
-                return checkinVal.toISOString().split('T')[0];
-            })() : minDate,
+        // Initialize Check-Out calendar
+        var checkoutMinDate = new Date($checkin.val() || today);
+        checkoutMinDate.setDate(checkoutMinDate.getDate() + 1);
+        
+        var checkoutCalendar = new CustomCalendar($checkout[0], {
+            minDate: checkoutMinDate,
             defaultDate: $checkout.val() || (function() {
-                var checkinVal = new Date($checkin.val() || minDate);
-                checkinVal.setDate(checkinVal.getDate() + 2);
-                return checkinVal.toISOString().split('T')[0];
+                var d = new Date($checkin.val() || today);
+                d.setDate(d.getDate() + 2);
+                return d;
             })(),
-            allowInput: false,
-            clickOpens: true,
-            appendTo: $checkout.closest('.bys-date-field')[0],
-            static: false,
-            monthSelectorType: 'dropdown',
-            animate: true,
-            locale: {
-                firstDayOfWeek: 0 // Start week on Sunday (0 = Sunday, 1 = Monday)
-            },
-            onReady: function(selectedDates, dateStr, instance) {
-                addCustomFooter(instance);
-                // Ensure proper alignment after render
-                setTimeout(function() {
-                    instance.redraw();
-                    // Force alignment fix
-                    var calendar = instance.calendarContainer;
-                    if (calendar) {
-                        var weekdays = calendar.querySelector('.flatpickr-weekdays');
-                        var days = calendar.querySelector('.flatpickr-days');
-                        if (weekdays && days) {
-                            // Ensure both have same width
-                            var width = Math.max(weekdays.offsetWidth, days.offsetWidth);
-                            weekdays.style.width = width + 'px';
-                            days.style.width = width + 'px';
-                        }
-                    }
-                }, 50);
+            onSelect: function(date, dateStr) {
+                // Ensure checkout is after checkin
+                var checkinDate = new Date($checkin.val());
+                if (date <= checkinDate) {
+                    var minCheckout = new Date(checkinDate);
+                    minCheckout.setDate(minCheckout.getDate() + 1);
+                    checkoutCalendar.setDate(minCheckout);
+                }
             }
         });
         
-        // Store picker instances for form submission
-        $checkin.data('flatpickr', checkinPicker);
-        $checkout.data('flatpickr', checkoutPicker);
+        // Store calendar instances
+        $checkin.data('calendar', checkinCalendar);
+        $checkout.data('calendar', checkoutCalendar);
         
-        // Store picker reference on input element for easy access
-        $checkin[0]._flatpickr = checkinPicker;
-        $checkout[0]._flatpickr = checkoutPicker;
-        
-        // Add click handlers for wrapper and icon - Check-In
-        $checkin.closest('.bys-date-picker-wrapper').on('click', function(e) {
-            e.stopPropagation();
-            if (!checkinPicker.isOpen) {
-                checkinPicker.open();
+        // Update checkout when checkin changes
+        $checkin.on('change', function() {
+            var checkinDate = new Date($(this).val());
+            var minCheckout = new Date(checkinDate);
+            minCheckout.setDate(minCheckout.getDate() + 1);
+            checkoutCalendar.setMinDate(minCheckout);
+            
+            if (checkoutCalendar.selectedDate && checkoutCalendar.selectedDate <= checkinDate) {
+                checkoutCalendar.setDate(minCheckout);
             }
         });
-        
-        $checkin.closest('.bys-date-field').find('.bys-date-icon').on('click', function(e) {
-            e.stopPropagation();
-            if (!checkinPicker.isOpen) {
-                checkinPicker.open();
-            }
-        });
-        
-        // Add click handlers for wrapper and icon - Check-Out
-        $checkout.closest('.bys-date-picker-wrapper').on('click', function(e) {
-            e.stopPropagation();
-            if (!checkoutPicker.isOpen) {
-                checkoutPicker.open();
-            }
-        });
-        
-        $checkout.closest('.bys-date-field').find('.bys-date-icon').on('click', function(e) {
-            e.stopPropagation();
-            if (!checkoutPicker.isOpen) {
-                checkoutPicker.open();
-            }
-        });
-    }
+    });
     
 })(jQuery);
-
