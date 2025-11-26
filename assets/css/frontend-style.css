@@ -753,6 +753,7 @@
     max-width: 100%;
     padding: 0;
     background-color: #F5F8F9;
+    padding: 0 20px;
 }
 
 .bys-hotel-rooms .bys-rooms-grid {
@@ -761,6 +762,12 @@
     gap: 60px;
     max-width: 1140px;
     margin: 0 auto;
+}
+
+@media (max-width: 991px) {
+    .bys-hotel-rooms .bys-rooms-grid {
+        gap: 40px 30px;
+    }
 }
 
 @media (max-width: 767px) {
@@ -885,6 +892,7 @@
     font-weight: 300;
     line-height: 40px;
     color: #462801;
+    margin: 0;
 }
 
 .bys-hotel-rooms .bys-room-specs-line {
@@ -929,6 +937,11 @@
 .bys-hotel-rooms .bys-amenity-icon {
     font-size: 30px;
     color: #D3AA74;
+}
+
+.bys-hotel-rooms .bys-amenity-icon svg {
+    max-width: 25px;
+    max-height: 25px;
 }
 
 .bys-hotel-rooms .bys-room-description {
