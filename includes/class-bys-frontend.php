@@ -16,6 +16,7 @@ class BYS_Frontend {
         add_shortcode('hotel_rooms', array($this, 'display_hotel_rooms'));
         add_shortcode('hotel_rooms_debug', array($this, 'display_hotel_rooms_debug'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_scripts'));
+        add_filter('script_loader_tag', array($this, 'defer_frontend_script'), 10, 3);
         add_action('wp_ajax_bys_generate_deep_link', array($this, 'ajax_generate_deep_link'));
         add_action('wp_ajax_nopriv_bys_generate_deep_link', array($this, 'ajax_generate_deep_link'));
         add_action('wp_footer', array($this, 'print_footer_scripts'), 999);
@@ -53,28 +54,65 @@ class BYS_Frontend {
      * Enqueue frontend scripts and styles
      */
     public function enqueue_frontend_scripts() {
-        // Enqueue custom calendar styles
         wp_enqueue_style(
             'bys-frontend-style',
             BYS_PLUGIN_URL . 'assets/css/frontend-style.css',
             array(),
             BYS_PLUGIN_VERSION
         );
+
+        // Bootstrap 3 (required by bootstrap-datepicker) - CDN
+        wp_enqueue_style(
+            'bootstrap',
+            'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css',
+            array(),
+            '5.3.8'
+        );
+        wp_enqueue_script(
+            'bootstrap',
+            'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.min.js',
+            array('jquery'),
+            '5.3.8',
+            true
+        );
+
+        // Bootstrap Datepicker - CDN
+        wp_enqueue_style(
+            'bootstrap-datepicker',
+            'https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker.min.css',
+            array('bootstrap'),
+            '1.10.0'
+        );
+        wp_enqueue_script(
+            'bootstrap-datepicker',
+            'https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js',
+            array('jquery', 'bootstrap'),
+            '1.10.0',
+            true
+        );
         
-        // Enqueue custom calendar JavaScript
         wp_enqueue_script(
             'bys-frontend-script',
             BYS_PLUGIN_URL . 'assets/js/frontend-script.js',
-            array('jquery'),
+            array('jquery', 'bootstrap-datepicker'),
             BYS_PLUGIN_VERSION,
             true
         );
         
-        // Localize script
         wp_localize_script('bys-frontend-script', 'bysData', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('bys_booking_nonce')
         ));
+    }
+
+    /**
+     * Add defer to frontend script so it doesn't block page rendering
+     */
+    public function defer_frontend_script($tag, $handle, $src) {
+        if ('bys-frontend-script' !== $handle) {
+            return $tag;
+        }
+        return str_replace(' src', ' defer src', $tag);
     }
     
     /**
@@ -120,7 +158,6 @@ class BYS_Frontend {
             return;
         }
         
-        // Check if scripts are already enqueued
         if (!wp_style_is('bys-frontend-style', 'enqueued')) {
             wp_enqueue_style(
                 'bys-frontend-style',
@@ -129,17 +166,26 @@ class BYS_Frontend {
                 BYS_PLUGIN_VERSION
             );
         }
-        
+        if (!wp_style_is('bootstrap', 'enqueued')) {
+            wp_enqueue_style('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css', array(), '3.4.1');
+        }
+        if (!wp_style_is('bootstrap-datepicker', 'enqueued')) {
+            wp_enqueue_style('bootstrap-datepicker', 'https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/css/bootstrap-datepicker.min.css', array('bootstrap'), '1.10.0');
+        }
+        if (!wp_script_is('bootstrap', 'enqueued')) {
+            wp_enqueue_script('bootstrap', 'https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js', array('jquery'), '3.4.1', true);
+        }
+        if (!wp_script_is('bootstrap-datepicker', 'enqueued')) {
+            wp_enqueue_script('bootstrap-datepicker', 'https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js', array('jquery', 'bootstrap'), '1.10.0', true);
+        }
         if (!wp_script_is('bys-frontend-script', 'enqueued')) {
             wp_enqueue_script(
                 'bys-frontend-script',
                 BYS_PLUGIN_URL . 'assets/js/frontend-script.js',
-                array('jquery'),
+                array('jquery', 'bootstrap-datepicker'),
                 BYS_PLUGIN_VERSION,
                 true
             );
-            
-            // Localize script
             wp_localize_script('bys-frontend-script', 'bysData', array(
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('bys_booking_nonce')

@@ -310,7 +310,7 @@ jQuery(document).ready(function($) {
     $('#bys-generate-test-link').on('click', function() {
         var $button = $(this);
         var originalText = $button.text();
-        $button.prop('disabled', true).text('<?php esc_attr_e('Generating...', 'book-your-stay'); ?>');
+        $button.prop('disabled', true).text('<?php esc_attr_e('Loading...', 'book-your-stay'); ?>');
         
         var formData = {
             action: 'bys_generate_deep_link',

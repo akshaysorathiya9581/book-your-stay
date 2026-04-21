@@ -1,6 +1,44 @@
+body {
+    overflow-x: hidden;
+}
+
 /**
  * Frontend styles for Book Your Stay
  */
+
+.hero-slider-cmn {
+    position: unset !important;
+}
+
+.hero-slider-cmn .swiper-slide > .elementor-element {
+    background-attachment: fixed;
+}
+
+.hero-push-down-cmn {
+    margin-top: 0 !important;
+}
+
+.hero-push-down-cmn > .elementor-element {
+    margin: -50px 0px 0px 0px;
+}
+
+@media (max-width: 767px) {
+    .hero-push-down-cmn > .elementor-element {
+        margin: 0px 0px 30px 0px;
+    }
+}
+
+.hero-push-down-cmn > .elementor-element .elementor-widget-container {
+    margin: unset !important;
+}
+
+.hero-slider-cmn .hero-banner-booking {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2 !important;
+}
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&display=swap');
 
@@ -9,13 +47,22 @@
     width: 100%;
 }
 
+@media (max-width: 1370px) {
+    .hero-slider-cmn .hero-banner-booking {
+        right: 5%;
+    }
+}
+
 @media (max-width: 1023px) {
-    .hero-banner-booking {
+    .bys-hotel-rooms .hero-banner-booking {
         top: auto !important;
         left: 75% !important;
         bottom: 14px !important;
         width: calc(100vw - 32px) !important;
         transform: translateX(-50%) !important;
+    }
+    .hero-slider-cmn .hero-banner-booking {
+       right: 4%;
     }
 }
 
@@ -38,6 +85,12 @@
     align-items: center;
     gap: 10px;
     justify-content: flex-start;
+}
+
+@media (max-width: 767px) {
+    .bys-booking-widget-wrapper .bys-mobile-toggle-btn {
+        padding: 15px 30px;
+    }   
 }
 
 .bys-booking-widget-wrapper .bys-mobile-toggle-btn:hover {
@@ -79,15 +132,20 @@
     padding: 50px 34px;
     margin-left: auto;
     position: relative;
-    overflow: visible;
+    overflow: visible !important;
     display: block;
 }
 
 .bys-booking-widget-wrapper .bys-booking-header {
     text-align: center;
-    padding-bottom: 35px;
+    /* padding-bottom: 35px;
     margin-bottom: 40px;
-    border-bottom: 1px solid #D3AA74;
+    border-bottom: 1px solid #D3AA74; */
+}
+
+.bys-booking-widget-wrapper .bys-booking-header.bys-header-toggle {
+    cursor: pointer;
+    min-width: 285px;
 }
 
 .bys-booking-widget-wrapper .bys-booking-title {
@@ -113,6 +171,14 @@
     gap: 20px;
 }
 
+@media (min-width: 767px) {
+    .bys-booking-widget-wrapper .bys-booking-form {
+        padding-top: 35px;
+        margin-top: 40px;
+        border-top: 1px solid #D3AA74;
+    }
+}
+
 .bys-booking-widget-wrapper .bys-booking-fields {
     display: grid;
     /* grid-template-columns: repeat(2, 1fr); */
@@ -122,7 +188,7 @@
 .bys-booking-widget-wrapper .bys-booking-field {
     position: relative;
     width: 100%;
-    height: 48px;
+    height: 46px;
     border: 1px solid #DFEFF980;
     border-radius: 4px;
     padding: 0 14px;
@@ -174,9 +240,9 @@
 }
 
 /* Custom Date Picker Styles */
-.bys-booking-widget-wrapper .bys-date-field {
+/* .bys-booking-widget-wrapper .bys-date-field {
     padding-right: 40px;
-}
+} */
 
 .bys-booking-widget-wrapper .bys-date-picker-wrapper {
     position: relative;
@@ -237,253 +303,227 @@
     outline: none;
 }
 
-/* Custom Calendar Styles */
-.bys-booking-widget-wrapper .bys-custom-calendar {
-    display: none;
-    position: absolute;
-    top: calc(100% + 8px);
-    left: 0;
-    width: 320px;
-    min-width: 320px;
-    max-width: 320px;
-    background: #F5F8F9;
+/* Calendar opens in position below the date field */
+.bys-booking-widget-wrapper .bys-date-field .datepicker.dropdown-menu {
+    position: absolute !important;
+    top: 100% !important;
+    left: unset !important;
+    right: 0 !important;
+    margin-top: 8px !important;
+}
+
+/* ============================================
+   Bootstrap Datepicker - clean design overwrite
+   (Bootstrap-based, month/year as dropdowns)
+   ============================================ */
+.datepicker.dropdown-menu {
+    z-index: 9999 !important;
+    min-width: 300px;
+    padding: 16px 12px;
     border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    border: 1px solid #e0e0e0;
     font-family: "Open Sans", sans-serif;
-    padding: 20px 16px 16px 16px;
-    z-index: 9999;
-    box-sizing: border-box;
-    animation: calendarFadeIn 0.3s ease-in-out;
 }
 
-.bys-booking-widget-wrapper .bys-custom-calendar.open {
-    display: block;
-}
-
-@keyframes calendarFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
+@media (max-width: 575px) {
+    .datepicker.dropdown-menu {
+        width: 100%;
     }
 }
 
-/* Calendar Header */
-.bys-booking-widget-wrapper .bys-calendar-header {
-    margin-bottom: 16px;
+.datepicker table tr td.today {
+    background-color: #1c1e1f;
+    color: #ffffff;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #E0E0E0;
+/* Header: arrows + month/year dropdowns */
+.datepicker thead tr:first-child th {
+    border: none !important;
+    padding: 0 0 12px 0 !important;
+    vertical-align: middle !important;
+}
+
+.datepicker thead tr:first-child {
+    border-bottom: 0;
     padding-bottom: 12px;
+    margin-bottom: 8px;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-prev,
-.bys-booking-widget-wrapper .bys-calendar-next {
-    background: transparent;
-    border: none;
+.datepicker .prev,
+.datepicker .next {
+    width: 28px !important;
+    height: 28px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    color: #D3AA74 !important;
+    font-size: 18px !important;
+    line-height: 28px !important;
     cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border-radius: 4px;
-    transition: all 0.2s ease;
-    width: 24px;
-    height: 24px;
+    transition: background 0.2s, color 0.2s;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-prev:hover,
-.bys-booking-widget-wrapper .bys-calendar-next:hover {
-    background: rgba(211, 170, 116, 0.1);
-    transform: scale(1.1);
+.datepicker .prev:hover,
+.datepicker .next:hover {
+    background: rgba(211, 170, 116, 0.15) !important;
+    color: #b8925f !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-prev svg,
-.bys-booking-widget-wrapper .bys-calendar-next svg {
-    width: 24px;
-    height: 24px;
+.datepicker .datepicker-switch {
+    padding: 0 8px !important;
+    text-align: center !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-month-year {
+/* Month & year dropdown container */
+.bys-datepicker-month-year {
     display: flex;
     align-items: center;
-    gap: 20px;
-    flex: 1;
     justify-content: center;
+    gap: 16px;
+    flex: 1;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-month-select,
-.bys-booking-widget-wrapper .bys-calendar-year-select {
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid #E0E0E0;
-    color: #062943;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: "Open Sans", sans-serif;
-    padding: 0 20px 4px 10px;
+/* Bootstrap .form-control overwrite for dropdowns */
+.datepicker .bys-datepicker-month-select,
+.datepicker .bys-datepicker-year-select {
+    display: inline-block !important;
+    width: auto !important;
+    min-width: 100px;
+    max-width: 120px;
+    height: auto !important;
+    padding: 4px 24px 6px 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: #062943 !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    border-radius: 0 !important;
     cursor: pointer;
-    position: relative;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    outline: none;
-    border-radius: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23D3AA74' d='M0 0l5 6 5-6H0z'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 4px center !important;
+    background-size: 10px 6px !important;
+    transition: border-color 0.2s;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-year-select {
-    border-bottom: 2px solid #062943;
+.datepicker .bys-datepicker-month-select:hover,
+.datepicker .bys-datepicker-year-select:hover {
+    border-bottom-color: #D3AA74 !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-month-select:hover,
-.bys-booking-widget-wrapper .bys-calendar-year-select:hover {
-    border-bottom-color: #D3AA74;
+.datepicker .bys-datepicker-year-select {
+    border-bottom-width: 2px !important;
+    border-bottom-color: #062943 !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-month-select {
-    position: relative;
+.datepicker .bys-datepicker-year-select:hover {
+    border-bottom-color: #D3AA74 !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-month-select::after,
-.bys-booking-widget-wrapper .bys-calendar-year-select::after {
-    content: '';
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 5px solid #D3AA74;
-    pointer-events: none;
-}
-
-/* Weekdays */
-.bys-booking-widget-wrapper .bys-calendar-weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 4px;
-    border-bottom: 1px solid #E0E0E0;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
-}
-
-.bys-booking-widget-wrapper .bys-calendar-weekday {
+/* Weekday row */
+.datepicker thead tr:nth-child(2) th {
     color: #676B6D;
     font-size: 11px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    text-align: center;
-    padding: 0 2px;
+    padding: 8px 4px !important;
+    border: none !important;
 }
 
-/* Calendar Days */
-.bys-booking-widget-wrapper .bys-calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 4px;
-    padding-top: 6px;
+/* Day cells - all number td 34px x 34px */
+.datepicker table tr td {
+    padding: 0 !important;
+    border: none !important;
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    max-width: 46px;
+    /* width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important; */
+    box-sizing: border-box !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-day {
-    height: 38px;
-    line-height: 38px;
-    width: 100%;
+@media (max-width: 575px) { 
+    .datepicker table tr td {
+        width: 35px;
+        height: 35px;
+        min-width: 35px;
+        min-height: 35px;
+    }
+}
+
+.datepicker table tr td.day {
+    font-size: 13px;
     color: #062943;
     border-radius: 4px;
-    font-size: 13px;
-    font-weight: 400;
-    border: 1px solid transparent;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-    aspect-ratio: 1;
-    cursor: pointer;
-    text-align: center;
+    transition: background 0.2s;
+    text-align: center !important;
+    vertical-align: middle !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-day.prev-month,
-.bys-booking-widget-wrapper .bys-calendar-day.next-month {
-    color: #B0B0B0;
-    opacity: 0.35;
+.datepicker table tr td.day:hover {
+    background: #e8e8e8 !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-day.disabled {
-    color: #B0B0B0;
-    opacity: 0.35;
-    cursor: not-allowed;
-}
-
-.bys-booking-widget-wrapper .bys-calendar-day:nth-child(7n) {
-    color: #B0B0B0;
+.datepicker table tr td.old,
+.datepicker table tr td.new {
+    color: #b0b0b0 !important;
     opacity: 0.5;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-day:not(.disabled):hover {
-    background: #E8E8E8;
-    border-color: transparent;
+.datepicker table tr td.disabled,
+.datepicker table tr td.disabled:hover {
+    color: #b0b0b0 !important;
+    opacity: 0.5;
+    cursor: not-allowed !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-day.selected {
-    background: #F5E6D3;
-    border: 1px solid #D3AA74;
-    color: #062943;
+/* Today's date: bg #1c1e1f, color #ffffff */
+.datepicker table tr td.today {
+    background: #1c1e1f !important;
+    color: #ffffff !important;
     font-weight: 500;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-day.selected:hover {
-    background: #F0D9B8;
-    border: 1px solid #D3AA74;
+.datepicker table tr td.today:hover {
+    background: #2a2d2e !important;
+    color: #ffffff !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-day.selected:nth-child(7n) {
-    color: #062943;
-    opacity: 1;
-    background: #F5E6D3;
+.datepicker table tr td.active,
+.datepicker table tr td.active:hover {
+    background: #F5E6D3 !important;
+    border: 1px solid #D3AA74 !important;
+    color: #062943 !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-day.today {
-    border: 1px solid transparent;
-    color: #062943;
-    font-weight: 400;
-    background: transparent;
+.datepicker table tr td.today.active {
+    background: #F5E6D3 !important;
+    border: 1px solid #D3AA74 !important;
+    color: #062943 !important;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-day.today:hover {
-    background: #E8E8E8;
-    border: 1px solid transparent;
-}
-
-.bys-booking-widget-wrapper .bys-calendar-day.today.selected {
-    background: #F5E6D3;
-    border: 1px solid #D3AA74;
-    font-weight: 500;
-}
-
-/* Calendar Footer */
-.bys-booking-widget-wrapper .bys-calendar-footer {
+/* Cancel & Confirm footer buttons */
+.datepicker .bys-datepicker-footer {
     display: flex;
     justify-content: space-between;
-    padding: 14px 0 0 0;
-    margin-top: 14px;
-    border-top: 1px solid #E0E0E0;
     gap: 10px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e0e0e0;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-btn {
+.datepicker .bys-datepicker-footer .bys-calendar-btn {
     flex: 1;
     padding: 10px 18px;
     border: none;
@@ -492,22 +532,27 @@
     font-weight: 500;
     cursor: pointer;
     font-family: "Open Sans", sans-serif;
-    transition: all 0.2s ease;
-    text-transform: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background 0.2s, box-shadow 0.2s;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-cancel,
-.bys-booking-widget-wrapper .bys-calendar-confirm {
-    background: #1E3A5F;
+.datepicker .bys-datepicker-footer .bys-calendar-cancel {
+    background: #34495e;
     color: #fff;
 }
 
-.bys-booking-widget-wrapper .bys-calendar-cancel:hover,
-.bys-booking-widget-wrapper .bys-calendar-confirm:hover {
-    background: #152A47;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);
+.datepicker .bys-datepicker-footer .bys-calendar-cancel:hover {
+    background: #2c3e50;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.datepicker .bys-datepicker-footer .bys-calendar-confirm {
+    background: #4a6278;
+    color: #fff;
+}
+
+.datepicker .bys-datepicker-footer .bys-calendar-confirm:hover {
+    background: #3d5266;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .bys-booking-widget-wrapper .bys-booking-input:focus,
@@ -524,9 +569,9 @@
 .bys-booking-widget-wrapper .bys-booking-button {
     font-family: "Open Sans", sans-serif !important;
     width: 100%;
-    height: 48px;
+    height: 40px;
     padding: 5px 20px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
     line-height: 24px;
     background-color: #F1EDE9;
@@ -704,8 +749,45 @@
     }
 } */
 
+@media (min-width: 1440px) {
+    .hero-banner-booking {
+        top: 55% !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .hero__booking-content .elementor-heading-title.elementor-size-default br {
+        display: none !important;
+    }
+    .hero__booking-content .elementor-widget-container br {
+        display: none !important;
+    }
+    .hero__booking-content .elementor-element.e-con-full.e-con.e-child  {
+/*         padding-bottom: 60px !important; */
+    }
+    .bys-booking-widget-wrapper .bys-booking-header {
+        display: none !important;
+    }
+    .hero-banner-booking {
+        width: calc(100% - 40px);
+        left: 50%;
+        transform: translateX(-50%) !important;
+        right: unset !important;
+        bottom: -20px !important;
+        top: unset !important;
+    }
+
+    .bys-booking-widget {
+        border-radius: 0 0 4px 4px !important;
+        overflow: hidden !important;
+    }
+    .bys-booking-widget-wrapper .bys-mobile-toggle-btn[aria-expanded="true"] {
+        border-radius: 4px 4px 0 0;
+    }
+}
+
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .bys-booking-widget-wrapper .bys-mobile-toggle-btn {
         display: flex;
     }
@@ -723,6 +805,7 @@
 
     .bys-booking-widget-wrapper {
         max-width: 100%;
+        border-radius: 4px !important;
     }
 
     .bys-booking-widget-wrapper.active .bys-booking-widget {
@@ -768,294 +851,20 @@
     }
 
     .bys-booking-widget-wrapper .bys-booking-widget .bys-booking-button {
-        padding: 14px 20px;
+        padding: 5px 20px;
         font-size: 15px;
     }
 }
 
-/* Hotel Rooms List Styles - Matching Live Site Design */
-.bys-hotel-rooms {
-    font-family: "Open Sans", sans-serif;
-    max-width: 100%;
-    padding: 0;
-    background-color: #F5F8F9;
-    padding: 0 20px;
-}
 
-.bys-hotel-rooms .bys-rooms-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 60px;
-    max-width: 1140px;
-    margin: 0 auto;
-}
-
-@media (max-width: 991px) {
-    .bys-hotel-rooms .bys-rooms-grid {
-        gap: 40px 30px;
+@media (min-width: 991px) and (max-width: 1400px) {
+    .hero-slider-cmn {
+        min-height: calc(100vh + 260px);
     }
-}
-
-@media (max-width: 767px) {
-    .bys-hotel-rooms .bys-rooms-grid {
-        grid-template-columns: repeat(1, 1fr);
+    .hero-slider-cmn .hero__booking-content .swiper-wrapper .swiper-slide {
+        min-height: calc(100vh + 260px);
     }
-
-    .bys-mobile-toggle-icon svg {
-        height: 24px;
-        width: 24px;
+    .hero-slider-cmn .hero-banner-booking {
+        top: calc(50% + 130px);
     }
-
-    .hero__booking-content {
-        padding-bottom: 70px;
-    }
-}
-
-.bys-hotel-rooms .bys-room-card {
-    background: transparent;
-    border-radius: 0;
-    overflow: hidden;
-    box-shadow: none;
-    transition: none;
-    display: flex;
-    flex-direction: column;
-    border: none;
-}
-
-.bys-hotel-rooms .bys-room-card:hover {
-    transform: none;
-    box-shadow: none;
-}
-
-.bys-hotel-rooms .bys-room-card-fallback {
-    border: 2px dashed #8B4513;
-    background: linear-gradient(135deg, #fff9f0 0%, #ffffff 100%);
-}
-
-.bys-hotel-rooms .bys-room-card-fallback:hover {
-    border-color: #6B3410;
-    background: linear-gradient(135deg, #fff5e6 0%, #ffffff 100%);
-}
-
-.bys-hotel-rooms .bys-room-image-placeholder {
-    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.bys-hotel-rooms .bys-room-image {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    max-height: 360px;
-    margin-bottom: 15px;
-}
-
-.bys-hotel-rooms .bys-room-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    transition: none;
-    display: block;
-    border-radius: 6px;
-}
-
-.bys-hotel-rooms .bys-room-card:hover .bys-room-image img {
-    transform: none;
-}
-
-.bys-hotel-rooms .bys-room-price-badge {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 19.92px;
-    text-transform: uppercase;
-    background-color: #fafafa;
-    color: #000000;
-    padding: 8px 16px 8px 16px;
-    min-width: 150px;
-    text-align: center;
-}
-
-.bys-hotel-rooms .bys-room-price-badge span {
-    display: inline-block;
-}
-
-/* .bys-hotel-rooms .bys-price-label {
-    font-size: 9px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #333333;
-    margin-bottom: 2px;
-    line-height: 1.2;
-}
-
-.bys-hotel-rooms .bys-price-amount {
-    font-size: 20px;
-    font-weight: 700;
-    color: #000000;
-    line-height: 1;
-    font-family: serif;
-}
-
-.bys-hotel-rooms .bys-price-period {
-    font-size: 9px;
-    color: #666666;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 1px;
-    line-height: 1.2;
-    font-family: "Open Sans", sans-serif;
-} */
-
-.bys-hotel-rooms .bys-room-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    column-gap: 15px;
-    row-gap: 15px;
-}
-
-.bys-hotel-rooms .bys-room-title {
-    font-family: "Playfair", serif !important;
-    font-size: 30px;
-    font-weight: 300;
-    line-height: 40px;
-    color: #462801;
-    margin: 0;
-}
-
-.bys-hotel-rooms .bys-room-specs-line {
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
-    color: #676B6D;
-}
-
-.bys-hotel-rooms .bys-room-amenities {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-    row-gap: 5px;
-    column-gap: 15px;
-    justify-content: start;
-    max-height: 70px;
-    overflow: hidden;
-    position: relative;
-    transition: all 0.25s ease-in-out;
-    word-break: break-word;
-}
-
-.bys-hotel-rooms .bys-room-amenities:hover {
-    max-height: none;
-    clip-path: inset(0 0 0 0);
-}
-
-.bys-hotel-rooms .bys-room-amenity-item {
-    display: flex;
-    align-items: center;
-    column-gap: 5px;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
-    color: #333632;
-}
-
-.bys-hotel-rooms .bys-amenity-icon {
-    font-size: 30px;
-    color: #D3AA74;
-}
-
-.bys-hotel-rooms .bys-amenity-icon svg {
-    max-width: 25px;
-    max-height: 25px;
-}
-
-.bys-hotel-rooms .bys-room-description {
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 20px;
-    color: #676B6D;
-}
-
-.bys-hotel-rooms .bys-book-now-link {
-    position: relative;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 24px;
-    letter-spacing: 3%;
-    text-align: center;
-    vertical-align: middle;
-    color: #462801;
-    text-decoration: underline;
-    text-underline-offset: 5px;
-}
-
-.bys-hotel-rooms .bys-book-now-link:after {
-    content: "";
-    position: absolute;
-    right: -20px;
-    top: 50%;
-    width: 8px;
-    height: 10px;
-    background: url(https://dhr.4shaw-development.co/le-franschhoek-hotel-spa/wp-content/uploads/sites/2/2025/02/chevr.svg) no-repeat center / cover;
-    transform: translateY(-50%);
-}
-
-.bys-hotel-rooms .bys-book-now-link:hover {
-    color: #6B3410;
-    text-decoration: underline;
-}
-
-.bys-hotel-rooms .bys-book-now-link:disabled {
-    color: #999;
-    cursor: not-allowed;
-    text-decoration: underline;
-}
-
-.bys-hotel-rooms .bys-book-now-button {
-    display: inline-block;
-    width: 100%;
-    padding: 14px 24px;
-    background: linear-gradient(135deg, #8B4513 0%, #6B3410 100%);
-    color: #fff;
-    text-decoration: none;
-    border-radius: 6px;
-    font-size: 16px;
-    font-weight: 600;
-    text-align: center;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
-    cursor: pointer;
-    border: none;
-}
-
-.bys-hotel-rooms .bys-book-now-button:hover {
-    background: linear-gradient(135deg, #6B3410 0%, #5A2A0D 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
-    color: #fff;
-    text-decoration: none;
-}
-
-.bys-hotel-rooms .bys-book-now-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 10px rgba(139, 69, 19, 0.3);
-}
-
-.bys-hotel-rooms .bys-book-now-button:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
 }

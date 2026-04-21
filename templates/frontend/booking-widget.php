@@ -37,7 +37,7 @@ $default_checkout = date('Y-m-d', strtotime('+3 days'));
         </span>
     </button>
     <div class="bys-booking-widget">
-        <div class="bys-booking-header">
+        <div class="bys-booking-header bys-header-toggle" role="button" tabindex="0" aria-expanded="true" aria-controls="bys-booking-form">
             <h3 class="bys-booking-title">
                 <span class="bys-booking-icon">
                     <svg width="25" height="26" viewBox="0 0 25 26" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +52,7 @@ $default_checkout = date('Y-m-d', strtotime('+3 days'));
 
         <form class="bys-booking-form" id="bys-booking-form">
             <div class="bys-booking-fields">
-                <div class="bys-booking-field bys-date-field">
+                <div class="bys-booking-field bys-date-field" id="bys-date-field-checkin">
                     <label for="bys-checkin"><?php _e('Check-In', 'book-your-stay'); ?></label>
                     <div class="bys-date-picker-wrapper">
                         <input type="text" id="bys-checkin" name="checkin" class="bys-date-input"
@@ -69,7 +69,7 @@ $default_checkout = date('Y-m-d', strtotime('+3 days'));
                     </div>
                 </div>
 
-                <div class="bys-booking-field bys-date-field">
+                <div class="bys-booking-field bys-date-field" id="bys-date-field-checkout">
                     <label for="bys-checkout"><?php _e('Check-Out', 'book-your-stay'); ?></label>
                     <div class="bys-date-picker-wrapper">
                         <input type="text" id="bys-checkout" name="checkout" class="bys-date-input"
@@ -90,9 +90,9 @@ $default_checkout = date('Y-m-d', strtotime('+3 days'));
                     <label for="bys-guests"><?php _e('Guests', 'book-your-stay'); ?></label>
                     <div class="custom-select" data-target="#bys-guests">
                         <?php
-                        $default_adults = 1;
+                        $default_adults = 2;
                         $default_children = 0;
-                        $adults_text = $default_adults . ($default_adults === 1 ? ' Adult' : ' Adults');
+                        $adults_text = $default_adults . ($default_adults === 2 ? ' Adult' : ' Adults');
                         $children_text = $default_children . ($default_children === 1 ? ' Child' : ' Children');
                         ?>
                         <span class="selected-value">
@@ -216,7 +216,7 @@ $default_checkout = date('Y-m-d', strtotime('+3 days'));
 
                 var $button = $(this).find('button[type="submit"]');
                 var originalText = $button.text();
-                $button.prop('disabled', true).text('<?php esc_attr_e('Generating...', 'book-your-stay'); ?>');
+                $button.prop('disabled', true).text('<?php esc_attr_e('Loading...', 'book-your-stay'); ?>');
 
                 var ajaxUrl = (typeof bysData !== 'undefined' && bysData.ajaxUrl) ? bysData.ajaxUrl : '<?php echo admin_url('admin-ajax.php'); ?>';
                 var nonce = (typeof bysData !== 'undefined' && bysData.nonce) ? bysData.nonce : '<?php echo wp_create_nonce('bys_booking_nonce'); ?>';
@@ -415,6 +415,24 @@ $default_checkout = date('Y-m-d', strtotime('+3 days'));
                 let roomsText = val + " " + (val === 1 ? "<?php echo esc_js(__('Room', 'book-your-stay')); ?>" : "<?php echo esc_js(__('Rooms', 'book-your-stay')); ?>");
                 $customSelect.find(".rooms-text").text(roomsText);
                 $($customSelect.data("target")).val(val);
+            }
+        });
+
+        // Header click: toggle booking form
+        function toggleBookingForm() {
+            var $header = $(this);
+            var $form = $header.next(".bys-booking-form");
+            $form.slideToggle(300);
+            $header.attr("aria-expanded", $form.is(":visible"));
+        }
+        $(".bys-booking-widget .bys-header-toggle").on("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleBookingForm.call(this);
+        }).on("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggleBookingForm.call(this);
             }
         });
 
