@@ -77,11 +77,11 @@
             }
         });
 
-        /* Always show Cancel and Set Date: re-inject footer every time (plugin may replace picker DOM) */
+        /* Always show Cancel and Confirm: re-inject footer every time (plugin may replace picker DOM) */
         $picker.find('.bys-datepicker-footer').remove();
         var $footer = $('<div class="bys-datepicker-footer">' +
             '<button type="button" class="bys-calendar-btn bys-calendar-cancel">Cancel</button>' +
-            '<button type="button" class="bys-calendar-btn bys-calendar-confirm">Set Date</button>' +
+            '<button type="button" class="bys-calendar-btn bys-calendar-confirm">Confirm</button>' +
             '</div>');
         $picker.append($footer);
         $picker.off('click.bysFooter').on('click.bysFooter', '.bys-calendar-cancel', function(e) {

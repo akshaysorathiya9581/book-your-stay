@@ -90,9 +90,9 @@ $default_checkout = date('Y-m-d', strtotime('+3 days'));
                     <label for="bys-guests"><?php _e('Guests', 'book-your-stay'); ?></label>
                     <div class="custom-select" data-target="#bys-guests">
                         <?php
-                        $default_adults = 1;
+                        $default_adults = 2;
                         $default_children = 0;
-                        $adults_text = $default_adults . ($default_adults === 1 ? ' Adult' : ' Adults');
+                        $adults_text = $default_adults . ($default_adults === 2 ? ' Adult' : ' Adults');
                         $children_text = $default_children . ($default_children === 1 ? ' Child' : ' Children');
                         ?>
                         <span class="selected-value">
@@ -216,7 +216,7 @@ $default_checkout = date('Y-m-d', strtotime('+3 days'));
 
                 var $button = $(this).find('button[type="submit"]');
                 var originalText = $button.text();
-                $button.prop('disabled', true).text('<?php esc_attr_e('Generating...', 'book-your-stay'); ?>');
+                $button.prop('disabled', true).text('<?php esc_attr_e('Loading...', 'book-your-stay'); ?>');
 
                 var ajaxUrl = (typeof bysData !== 'undefined' && bysData.ajaxUrl) ? bysData.ajaxUrl : '<?php echo admin_url('admin-ajax.php'); ?>';
                 var nonce = (typeof bysData !== 'undefined' && bysData.nonce) ? bysData.nonce : '<?php echo wp_create_nonce('bys_booking_nonce'); ?>';

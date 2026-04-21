@@ -33,6 +33,10 @@ body {
 }
 
 .hero-slider-cmn .hero-banner-booking {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translateY(-50%);
     z-index: 2 !important;
 }
 
@@ -43,6 +47,12 @@ body {
     width: 100%;
 }
 
+@media (max-width: 1370px) {
+    .hero-slider-cmn .hero-banner-booking {
+        right: 5%;
+    }
+}
+
 @media (max-width: 1023px) {
     .bys-hotel-rooms .hero-banner-booking {
         top: auto !important;
@@ -50,6 +60,9 @@ body {
         bottom: 14px !important;
         width: calc(100vw - 32px) !important;
         transform: translateX(-50%) !important;
+    }
+    .hero-slider-cmn .hero-banner-booking {
+       right: 4%;
     }
 }
 
@@ -500,7 +513,7 @@ body {
     color: #062943 !important;
 }
 
-/* Cancel & Set Date footer buttons */
+/* Cancel & Confirm footer buttons */
 .datepicker .bys-datepicker-footer {
     display: flex;
     justify-content: space-between;
@@ -750,12 +763,12 @@ body {
         display: none !important;
     }
     .hero__booking-content .elementor-element.e-con-full.e-con.e-child  {
-        padding-bottom: 60px !important;
+/*         padding-bottom: 60px !important; */
     }
     .bys-booking-widget-wrapper .bys-booking-header {
         display: none !important;
     }
-    .hero-banner-booking  {
+    .hero-banner-booking {
         width: calc(100% - 40px);
         left: 50%;
         transform: translateX(-50%) !important;
@@ -840,5 +853,18 @@ body {
     .bys-booking-widget-wrapper .bys-booking-widget .bys-booking-button {
         padding: 5px 20px;
         font-size: 15px;
+    }
+}
+
+
+@media (min-width: 991px) and (max-width: 1400px) {
+    .hero-slider-cmn {
+        min-height: calc(100vh + 260px);
+    }
+    .hero-slider-cmn .hero__booking-content .swiper-wrapper .swiper-slide {
+        min-height: calc(100vh + 260px);
+    }
+    .hero-slider-cmn .hero-banner-booking {
+        top: calc(50% + 130px);
     }
 }
